@@ -1,4 +1,5 @@
 export const PAGES = {
+  VIDEO_DETAIL: "/video-detail",
 };
 
 export const QUERY_MOBILE = "32em";
