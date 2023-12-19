@@ -7,8 +7,59 @@ from transformers import pipeline, T5Tokenizer
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from concurrent.futures import ThreadPoolExecutor
 from datetime import timedelta
+import uvicorn
+import firebase_admin
+import pyrebase
+import json
+ 
+from firebase_admin import credentials, auth
+from fastapi import FastAPI, Request
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 
 app = FastAPI()
+
+cred = credentials.Certificate('video-sum-b43b5-firebase-adminsdk-jovmu-e691b650d3.json')
+firebase = firebase_admin.initialize_app(cred)
+pb = pyrebase.initialize_app(json.load(open('firebase_config.json')))
+allow_all = ['*']
+app.add_middleware(
+   CORSMiddleware,
+   allow_origins=allow_all,
+   allow_credentials=True,
+   allow_methods=allow_all,
+   allow_headers=allow_all
+)
+# NOTE: This Authentication module
+@app.post("/signup")
+async def signup(request: Request):
+   req = await request.json()
+   email = req['email']
+   password = req['password']
+   print()
+   if email is None or password is None:
+       return HTTPException(detail={'message': 'Error! Missing Email or Password'}, status_code=400)
+   try:
+       user = auth.create_user(
+           email=email,
+           password=password
+       )
+       return JSONResponse(content={'message': f'Successfully created user {user.uid}'}, status_code=200)    
+   except Exception as e:
+       return JSONResponse(content={'Error when signin ': e}, status_code= 500)
+@app.post("/login")
+async def login(request: Request):
+   req_json = await request.json()
+   email = req_json['email']
+   password = req_json['password']
+   try:
+       user = pb.auth().sign_in_with_email_and_password(email, password)
+       jwt = user['idToken']
+       return JSONResponse(content={'token': jwt}, status_code=200)
+   except Exception as e:
+       print(e)
+       return JSONResponse(content={'Error when login ': e}, status_code= 500)
+
 
 class YouTubeLink(BaseModel):
     url: str
