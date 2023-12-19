@@ -84,6 +84,18 @@ const components: ThemeComponents = {
       textTransform: "capitalize",
     },
   },
+  Input: {
+    baseStyle: {
+      field: {
+        _autofill: {
+          border: "unset",
+          textFillColor: "black",
+          boxShadow: "0 0 0px 1000px white inset",
+          transition: "background-color 5000s ease-in-out 0s",
+        },
+      },
+    },
+  },
 };
 
 const sizes = {

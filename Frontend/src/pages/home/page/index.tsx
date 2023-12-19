@@ -175,6 +175,8 @@ const HomePage = () => {
             color="black"
             value={videoUrl}
             onChange={handleOnInputChange}
+            background="white"
+            border="none"
             _focusVisible={{
               boxShadow: "none",
             }}
