@@ -10,3 +10,4 @@ torch
 sentencepiece
 firebase_admin
 pyrebase
+httpx

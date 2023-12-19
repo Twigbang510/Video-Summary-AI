@@ -11,8 +11,10 @@ import uvicorn
 import firebase_admin
 import pyrebase
 import json
- 
-from firebase_admin import credentials, auth
+import httpx
+
+
+from firebase_admin import credentials, auth , db
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
@@ -20,7 +22,7 @@ from fastapi.responses import JSONResponse
 app = FastAPI()
 
 cred = credentials.Certificate('video-sum-b43b5-firebase-adminsdk-jovmu-e691b650d3.json')
-firebase = firebase_admin.initialize_app(cred)
+firebase = firebase_admin.initialize_app(cred,{"databaseURL": "https://video-sum-b43b5-default-rtdb.asia-southeast1.firebasedatabase.app/"})
 pb = pyrebase.initialize_app(json.load(open('firebase_config.json')))
 allow_all = ['*']
 app.add_middleware(
@@ -60,7 +62,39 @@ async def login(request: Request):
        print(e)
        return JSONResponse(content={'Error when login ': e}, status_code= 500)
 
+# NOTE : This is api method that saves the user information by id
+@app.post("/save")
+async def login(request: Request):
+    req_json = await request.json()
+    try : 
+        ref = db.reference('/')
+        uid = "jaY82FbHBWbufh3wWSZwDO4kRiK2" #HARDCODE  TODO:  Save by user id 
+        users_ref = ref.child('videos')
+        users_ref.set({
+            uid: {
+                'video_detail' : req_json
+            }
+        })
+        print(users_ref)
+        return JSONResponse(content={'Success': True}, status_code=200)
+    except Exception as e:
+        print(e)
+        return JSONResponse(content={'Error when save data ': e}, status_code= 500)
 
+async def save_video_data(data):
+    save_endpoint = "http://127.0.0.1:8000/save"  # TODO: Change domain for deployment
+
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.post(save_endpoint, json=data)
+
+        if response.status_code != 200:
+            raise HTTPException(status_code=response.status_code, detail="Failed to send data to /save endpoint")
+
+    except httpx.RequestError as e:
+        raise HTTPException(status_code=500, detail=f"Request error: {str(e)}")
+
+# NOTE : This process is create summary from script
 class YouTubeLink(BaseModel):
     url: str
 
@@ -126,6 +160,7 @@ async def get_video_metadata(youtube_link: YouTubeLink):
     youtube_service = build('youtube', 'v3', developerKey='AIzaSyBbbnTAD-PXqR3WtiZ-MmDljMGC4oV-uLc')
     request = youtube_service.videos().list(part='snippet,contentDetails,statistics', id=video_id)
     response = request.execute()
+    await save_video_data(response)
 
     return response
 
