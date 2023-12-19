@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+youtube-transcript-api
+google-api-python-client
+openai==0.27.7
+langchain
+python-dotenv
+transformers
+torch
+sentencepiece
