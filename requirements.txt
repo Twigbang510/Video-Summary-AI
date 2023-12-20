@@ -9,5 +9,5 @@ transformers
 torch
 sentencepiece
 firebase_admin
-pyrebase
+pyrebase4
 httpx
