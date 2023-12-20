@@ -34,7 +34,7 @@ const Layout = ({ children }: Props) => {
           cursor="pointer"
           onClick={token ? () => setToken("") : onOpen}
         >
-          {token ? "Hello" : "Login"}
+          {/* {token ? "Hello" : "Login"} */}
         </Col>
         {children}
       </Box>

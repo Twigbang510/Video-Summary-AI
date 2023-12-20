@@ -180,8 +180,8 @@ def process_transcript_segment(segment):
     group_text, start_time = segment
     summary = summarize_chunk(group_text)
     return {
-        "summaryText": summary,
-        "startTime": str(timedelta(seconds=start_time)),
+        "text": summary,
+        "start": str(timedelta(seconds=start_time)),
     }
 
 @app.post("/summarize")
