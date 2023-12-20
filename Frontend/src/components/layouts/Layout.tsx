@@ -1,8 +1,9 @@
-import { Box } from "@chakra-ui/react";
+import { Box, useDisclosure } from "@chakra-ui/react";
+import { Col } from "components/elements";
+import AppLoginModal from "components/elements/AppLoginModal";
 import React from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "redux/root-reducer";
-import { colors } from "theme";
 
 interface Props {
   children: React.ReactNode;
@@ -13,13 +14,29 @@ const Layout = ({ children }: Props) => {
     (state: RootState) => state.ui.isShowLoadingScreen
   );
   const initLoading = useSelector((state: RootState) => state.ui.initLoading);
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   const renderSiteContent = () => {
     if (isShowLoadingScreen || initLoading) {
       return null;
     }
 
-    return <Box backgroundColor={colors.alabaster}>{children}</Box>;
+    return (
+      <Box backgroundColor="#313131" position="relative">
+        <Col
+          width="fit-content"
+          position="absolute"
+          top={10}
+          right={10}
+          color="white"
+          cursor="pointer"
+          onClick={onOpen}
+        >
+          Login
+        </Col>
+        {children}
+      </Box>
+    );
   };
 
   return (
@@ -32,6 +49,7 @@ const Layout = ({ children }: Props) => {
         },
       }}
     >
+      <AppLoginModal isOpen={isOpen} onClose={onClose} />
       {renderSiteContent()}
     </Box>
   );
