@@ -49,18 +49,20 @@ async def signup(request: Request):
        return JSONResponse(content={'message': f'Successfully created user {user.uid}'}, status_code=200)    
    except Exception as e:
        return JSONResponse(content={'Error when signin ': e}, status_code= 500)
+   
 @app.post("/login")
 async def login(request: Request):
-   req_json = await request.json()
-   email = req_json['email']
-   password = req_json['password']
-   try:
-       user = pb.auth().sign_in_with_email_and_password(email, password)
-       jwt = user['idToken']
-       return JSONResponse(content={'token': jwt}, status_code=200)
-   except Exception as e:
-       print(e)
-       return JSONResponse(content={'Error when login ': e}, status_code= 500)
+    req_json = await request.json()
+    email = req_json['email']
+    password = req_json['password']
+    try:
+        user = pb.auth().sign_in_with_email_and_password(email, password)
+        jwt = user['idToken']
+        uuid = user['localId']  
+        return JSONResponse(content={'token': jwt, 'uuid': uuid}, status_code=200)
+    except Exception as e:
+        print(e)
+        return JSONResponse(content={'Error when login ': e}, status_code=500)
 
 # NOTE : This is api method that saves the user information by id
 @app.post("/save")

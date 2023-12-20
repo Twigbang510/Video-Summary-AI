@@ -7,7 +7,9 @@ import {
   Text,
   Image,
 } from "@chakra-ui/react";
+import axios from "axios";
 import { Col, Row } from "components/elements";
+import { appConfig } from "config";
 import { PAGES } from "constants/app";
 import { useState } from "react";
 import { useHistory } from "react-router-dom";
@@ -105,19 +107,15 @@ const HomePage = () => {
   };
 
   const handleSearch = async () => {
-    // try {
-    // const res = await request.get(
-    //   `https://youtube.com/oembed?url=https://www.youtube.com/watch?v=dQw4w9WgXcQ&format=json`,
-    //   {
-    //     headers: {
-    //       "Access-Control-Allow-Origin": "*",
-    //     },
-    //   }
-    // );
-    // console.log(123, res);
-    // } catch (err) {
-    //   console.log("error: ", err);
-    // }
+    try {
+      const res = await axios.get(`${appConfig.url}/login`, {
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+        },
+      });
+    } catch (err) {
+      console.log("error: ", err);
+    }
   };
 
   const renderHeroSection = () => {
@@ -194,7 +192,7 @@ const HomePage = () => {
             onClick={handleSearch}
             zIndex="10"
           >
-            Search
+            Import
           </Button>
         </Row>
         <Text fontSize="15px" color="white" marginTop={5}>

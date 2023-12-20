@@ -17,7 +17,7 @@ switch (stage) {
         TIMEOUT: 60000,
         HOST: "",
       },
-      URL: "",
+      URL: "http://127.0.0.1:8000",
     };
     break;
   case "test":
@@ -29,7 +29,7 @@ switch (stage) {
         TIMEOUT: 60000,
         HOST: "",
       },
-      URL: "",
+      URL: "http://127.0.0.1:8000",
     };
     break;
 }
