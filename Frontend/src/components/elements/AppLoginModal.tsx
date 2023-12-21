@@ -17,6 +17,9 @@ import {
 } from "@chakra-ui/react";
 import { PasswordField } from "components/shared/PasswordField";
 import { colors } from "theme";
+import axios from "axios";
+import { useLocalStorage } from "usehooks-ts";
+import { appConfig } from "config";
 
 const AppLoginModal = ({
   isOpen,
@@ -25,10 +28,33 @@ const AppLoginModal = ({
   isOpen: boolean;
   onClose: () => void;
 }) => {
+  const [token, setToken] = useLocalStorage("APP_TOKEN", "");
   const [isSignIn, setIsSignIn] = useState(true);
+  const [signUpInfo, setSignUpInfo] = useState({
+    email: undefined,
+    password: undefined,
+  });
+
+  const [signInInfo, setSignInInfo] = useState({
+    email: undefined,
+    password: undefined,
+  });
 
   const handleToggleMode = () => {
     setIsSignIn(!isSignIn);
+  };
+
+  const handleSignUp = async () => {
+    const resAction = await axios.post(`${appConfig.url}/signup`, signUpInfo);
+  };
+
+  const handleSignIn = async () => {
+    const resAction = await axios.post(`${appConfig.url}/login`, signInInfo);
+
+    if (resAction.status === 200) {
+      setToken(resAction.data.token);
+      onClose();
+    }
   };
 
   const renderSignIn = () => {
@@ -50,9 +76,18 @@ const AppLoginModal = ({
                 _hover={{
                   borderColor: "gray.300",
                 }}
+                value={signInInfo.email}
+                onChange={(event) =>
+                  setSignInInfo({ ...signInInfo, email: event.target.value })
+                }
               />
             </FormControl>
-            <PasswordField />
+            <PasswordField
+              value={signInInfo.password}
+              onChange={(event) =>
+                setSignInInfo({ ...signInInfo, password: event.target.value })
+              }
+            />
           </Stack>
           <HStack justify="space-between">
             <Checkbox defaultChecked>Remember me</Checkbox>
@@ -61,7 +96,11 @@ const AppLoginModal = ({
             </Button>
           </HStack>
           <Stack spacing="6">
-            <Button color="white" background={colors.primaryText}>
+            <Button
+              color="white"
+              background={colors.primaryText}
+              onClick={handleSignIn}
+            >
               Sign in
             </Button>
             <HStack>
@@ -104,28 +143,18 @@ const AppLoginModal = ({
                 _hover={{
                   borderColor: "gray.300",
                 }}
+                value={signUpInfo.email}
+                onChange={(event) =>
+                  setSignUpInfo({ ...signUpInfo, email: event.target.value })
+                }
               />
             </FormControl>
-            <FormControl>
-              <FormLabel htmlFor="username">Username</FormLabel>
-              <Input
-                id="username"
-                border="1px solid"
-                borderColor="gray.200"
-                boxShadow={{ base: "md" }}
-                _hover={{
-                  borderColor: "gray.300",
-                }}
-                _autofill={{
-                  border: "1px solid #E2E8F0",
-                  background: "white",
-                  textFillColor: "black",
-                  boxShadow:
-                    "0 4px 6px -1px rgba(0, 0, 0, 0.1),0 2px 4px -1px rgba(0, 0, 0, 0.06)",
-                }}
-              />
-            </FormControl>
-            <PasswordField />
+            <PasswordField
+              value={signUpInfo.password}
+              onChange={(event) =>
+                setSignUpInfo({ ...signUpInfo, password: event.target.value })
+              }
+            />
           </Stack>
           <HStack justify="space-between">
             <Checkbox defaultChecked>Remember me</Checkbox>
@@ -134,7 +163,11 @@ const AppLoginModal = ({
             </Button>
           </HStack>
           <Stack spacing="6">
-            <Button color="white" background={colors.primaryText}>
+            <Button
+              color="white"
+              background={colors.primaryText}
+              onClick={handleSignUp}
+            >
               Sign up
             </Button>
             <HStack>

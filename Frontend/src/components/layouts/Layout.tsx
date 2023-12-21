@@ -4,6 +4,7 @@ import AppLoginModal from "components/elements/AppLoginModal";
 import React from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "redux/root-reducer";
+import { useLocalStorage } from "usehooks-ts";
 
 interface Props {
   children: React.ReactNode;
@@ -15,6 +16,7 @@ const Layout = ({ children }: Props) => {
   );
   const initLoading = useSelector((state: RootState) => state.ui.initLoading);
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const [token, setToken] = useLocalStorage("APP_TOKEN", "");
 
   const renderSiteContent = () => {
     if (isShowLoadingScreen || initLoading) {
@@ -30,9 +32,9 @@ const Layout = ({ children }: Props) => {
           right={10}
           color="white"
           cursor="pointer"
-          onClick={onOpen}
+          onClick={token ? () => setToken("") : onOpen}
         >
-          Login
+          {/* {token ? "Hello" : "Login"} */}
         </Col>
         {children}
       </Box>
